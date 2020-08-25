@@ -3,10 +3,11 @@ package model
 type User struct {
 	Name string `json:"name"`
 }
-type Detail struct {
-	datetime
+type DateTime struct {
+	Timestamp string  `json:"timestamp"`
+	Details   *Detail `json:"detail"`
 }
-type datetime struct {
+type Detail struct {
 	Date string `json:"date"`
 	Time string `json:"time"`
 }
