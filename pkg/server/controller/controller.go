@@ -1,7 +1,9 @@
 package controller
 
-import(
+import (
 	"log"
+	"strconv"
+	"time"
 
 	// import gin library
 	"github.com/gin-gonic/gin"
@@ -10,18 +12,18 @@ import(
 	"github.com/miraikeitai2020/backend-summer-vacation/pkg/server/model"
 )
 
-var(
+var (
 	user model.User
 )
 
 type Controller struct {
 }
 
-func (ctrl *Controller)HelloWorld(context *gin.Context) {
+func (ctrl *Controller) HelloWorld(context *gin.Context) {
 	context.JSON(200, gin.H{"message": "hello world"})
 }
 
-func (ctrl *Controller)SayHello(context *gin.Context) {
+func (ctrl *Controller) SayHello(context *gin.Context) {
 	err := context.BindJSON(&user)
 	if err != nil {
 		log.Println("[ERROR] Faild Bind JSON")
@@ -35,9 +37,9 @@ func (ctrl *Controller)SayHello(context *gin.Context) {
 // 説明：
 // 現在の日付と時間を返す.
 // JSONの生成は gin.H を用いても良い
-// 
+//
 // リクエスト => なし
-// レスポンス => 
+// レスポンス =>
 // {
 //   "timestamp": string,
 //   "detail": {
@@ -45,25 +47,35 @@ func (ctrl *Controller)SayHello(context *gin.Context) {
 //     "time": string, //例: 00:00:00
 //   }
 // }
-func (ctrl *Controller)Task1(context *gin.Context) {
+func (ctrl *Controller) Task1(context *gin.Context) {
+	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	nowTime := time.Now()
+	const DateFormat = "2006-01-02"
+	const TimeFormat = "15:04:05"
+
+	context.JSON(200, gin.H{
+		"timestamp": timestamp,
+		"detail": map[string]string{
+			"date": nowTime.Format(DateFormat),
+			"time": nowTime.Format(TimeFormat)}})
 }
 
 // 課題2
 // 説明：
 // ツェラーの公式でリクエストで投げた日付の曜日を返す
 // JSONの生成は encoding/json を使用すること
-// 
-// リクエスト => 
+//
+// リクエスト =>
 // {
 //   "year": Int,
 //   "month": Int,
 //   "day": Int,
 // }
-// レスポンス => 
+// レスポンス =>
 // {
 //   "week": string //例： Monday
 // }
-func (ctrl *Controller)Task2(context *gin.Context) {
+func (ctrl *Controller) Task2(context *gin.Context) {
 }
 
 // 課題3
@@ -71,17 +83,17 @@ func (ctrl *Controller)Task2(context *gin.Context) {
 // ユーザーIDとパスワードをデータベースに登録して, 発行したトークンを返す
 // パスワードはハッシュ化したものをデータベースに登録する
 // JSONの生成は encoding/json を使用すること
-// 
-// リクエスト => 
+//
+// リクエスト =>
 // {
 //   "id": string,
 //   "password": string,
 // }
-// レスポンス => 
+// レスポンス =>
 // {
 //   "token": string
 // }
-func (ctrl *Controller)SignUp(context *gin.Context) {
+func (ctrl *Controller) SignUp(context *gin.Context) {
 }
 
 // 課題4
@@ -89,15 +101,15 @@ func (ctrl *Controller)SignUp(context *gin.Context) {
 // ユーザーIDとパスワードをデータベースに登録されたものかを照合する
 // 照合が終わったら結果を返す
 // JSONの生成は encoding/json を使用すること
-// 
-// リクエスト => 
+//
+// リクエスト =>
 // {
 //   "id": string,
 //   "password": string
 // }
-// レスポンス => 
+// レスポンス =>
 // {
 //   "certification": boolean
 // }
-func (ctrl *Controller)SignIn(context *gin.Context) {
+func (ctrl *Controller) SignIn(context *gin.Context) {
 }
