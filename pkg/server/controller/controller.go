@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	user model.User
+	user   model.User
+	detail model.Detail
 )
 
 type Controller struct {
@@ -52,12 +53,13 @@ func (ctrl *Controller) Task1(context *gin.Context) {
 	nowTime := time.Now()
 	const DateFormat = "2006-01-02"
 	const TimeFormat = "15:04:05"
+	detail.Date = nowTime.Format(DateFormat)
+	detail.Time = nowTime.Format(TimeFormat)
 
 	context.JSON(200, gin.H{
 		"timestamp": timestamp,
-		"detail": map[string]string{
-			"date": nowTime.Format(DateFormat),
-			"time": nowTime.Format(TimeFormat)}})
+		"detail":    detail,
+	})
 }
 
 // 課題2
