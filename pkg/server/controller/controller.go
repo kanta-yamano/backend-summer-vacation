@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"log"
 	"strconv"
 	"time"
@@ -13,7 +14,10 @@ import (
 )
 
 var (
-	user model.User
+	user     model.User
+	datetime model.DateTime
+	zeller   model.Zeller
+	weeks    model.Weeks
 )
 
 type Controller struct {
@@ -52,12 +56,9 @@ func (ctrl *Controller) Task1(context *gin.Context) {
 	const DateFormat = "2006-01-02"
 	const TimeFormat = "15:04:05"
 
-	detail := &model.Detail{
-		Date: nowTime.Format(DateFormat),
-		Time: nowTime.Format(TimeFormat)}
-	datetime := &model.DateTime{
-		Timestamp: strconv.FormatInt(time.Now().UTC().UnixNano(), 10),
-		Details:   detail}
+	datetime.Timestamp = strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	datetime.Details.Time = nowTime.Format(DateFormat)
+	datetime.Details.Date = nowTime.Format(TimeFormat)
 	context.JSON(200, datetime)
 }
 
@@ -77,6 +78,39 @@ func (ctrl *Controller) Task1(context *gin.Context) {
 //   "week": string //例： Monday
 // }
 func (ctrl *Controller) Task2(context *gin.Context) {
+	err := context.BindJSON(&zeller)
+	if err != nil {
+		log.Println("[ERROR] Faild Bind JSON")
+		context.JSON(500, gin.H{"message": "Internal Server Error"})
+		return
+	}
+	if zeller.Month < 3 {
+		zeller.Month += 12
+		zeller.Year--
+	}
+	z := (zeller.Year + zeller.Year/4 - zeller.Year/100 + zeller.Year/400 + (13*zeller.Month+8)/5 + zeller.Day) % 7
+	switch z {
+	case 0:
+		weeks.Week = "Sunday"
+	case 1:
+		weeks.Week = "Monday"
+	case 2:
+		weeks.Week = "Tuesday"
+	case 3:
+		weeks.Week = "Wednesday"
+	case 4:
+		weeks.Week = "Thursday"
+	case 5:
+		weeks.Week = "Fryday"
+	case 6:
+		weeks.Week = "Saturday"
+	}
+	jsonweek, err := json.MarshalIndent(weeks, "", "  ")
+	if err != nil {
+		context.JSON(500, gin.H{"JSON Marshal error": err})
+		return
+	}
+	context.String(200, string(jsonweek))
 }
 
 // 課題3
