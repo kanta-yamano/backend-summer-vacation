@@ -1,7 +1,6 @@
 package config
 
-import(
-	"os"
+import (
 	"fmt"
 	"log"
 )
@@ -37,13 +36,21 @@ func checkElements(c dataBaseConfig) error {
 	return nil
 }
 
+const (
+	DB_USER = "miraiketai2020"
+	DB_PASS = "miraiketai2020"
+	DB_IP   = "db"
+	DB_PORT = "3306"
+	DB_NAME = "summer"
+)
+
 func GetConnectionToken() string {
-	c = dataBaseConfig {
-		User: os.Getenv("DB_USER"),
-		Pass: os.Getenv("DB_PASS"),
-		IP	: os.Getenv("DB_IP"),
-		Port: os.Getenv("DB_PORT"),
-		Name: os.Getenv("DB_NAME"),
+	c = dataBaseConfig{
+		User: "miraiketai2020", //os.Getenv("DB_USER"),
+		Pass: "miraiketai2020", //os.Getenv("DB_PASS"),
+		IP:   "db",             //os.Getenv("DB_IP"),
+		Port: "3306",           //os.Getenv("DB_PORT"),
+		Name: "summer",         //os.Getenv("DB_NAME"),
 	}
 
 	err := checkElements(c)

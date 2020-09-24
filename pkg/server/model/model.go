@@ -19,3 +19,11 @@ type Zeller struct {
 type Weeks struct {
 	Week string `json:"week"`
 }
+type SignUp struct {
+	Id       string `json:id`
+	Password string `json:password`
+}
+
+type Restoken struct {
+	Token string `json:"token"`
+}

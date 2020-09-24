@@ -1,15 +1,22 @@
 package controller
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/google/uuid"
+
 	// import gin library
 	"github.com/gin-gonic/gin"
-
 	// import sample API packages
+
+	"github.com/miraikeitai2020/backend-summer-vacation/pkg/db"
 	"github.com/miraikeitai2020/backend-summer-vacation/pkg/server/model"
 )
 
@@ -18,6 +25,8 @@ var (
 	datetime model.DateTime
 	zeller   model.Zeller
 	weeks    model.Weeks
+	signUp   model.SignUp
+	restoken model.Restoken
 )
 
 type Controller struct {
@@ -129,6 +138,36 @@ func (ctrl *Controller) Task2(context *gin.Context) {
 //   "token": string
 // }
 func (ctrl *Controller) SignUp(context *gin.Context) {
+	if err := context.BindJSON(&signUp); err != nil {
+		context.JSON(500, gin.H{"message": "Internal Server Error"})
+		return
+	}
+
+	hash := sha256.Sum256([]byte(signUp.Password))
+	fmt.Println("ok")
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, "AuthToken is error")
+		return
+	}
+	restoken.Token = uuid.String()
+	/*_, err = db.Con.Query("INSERT INTO `signUp` VALUES(?,?,?)", signUp.Id, hex.EncodeToString(hashed[:]), restoken.Token)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, "Internal Server Error")
+	}*/
+	if err := signUpData(signUp.Id, hex.EncodeToString(hash[:]), restoken.Token); err != nil {
+		context.JSON(http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	context.JSON(200, restoken)
+}
+func signUpData(id, Pass, token string) error {
+	stmt, err := db.Con.Prepare("INSERT INTO signUp VALUES (?,?,?)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(id, Pass, token)
+	return err
 }
 
 // 課題4
